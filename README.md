@@ -1,127 +1,121 @@
-# Projekt M-II: Chaotyczne Przekształcanie Obrazu Cyfrowego
+# Image Scrambler
 
-> Implementacja algorytmów permutacji, substytucji i chaosu w przetwarzaniu obrazu — z graficznym interfejsem użytkownika (GUI).
+> Reversible image encryption using permutation, XOR substitution, and chaos-based algorithms — with a Tkinter GUI.
 
----
-
-## O projekcie
-
-Projekt demonstruje trzy etapy "scramblingu" (zaburzania) obrazu cyfrowego:
-
-| Etap | Metoda | Klucz |
-|------|--------|-------|
-| **1 – Naiwny scrambling** | Cykliczne przesunięcia (`np.roll`) wierszy i kolumn | Liczba całkowita (shift) |
-| **2 – Czysta permutacja** | Fisher-Yates shuffle z odwrotną permutacją P⁻¹ | Seed losowy |
-| **3 – Hybryda** | Permutacja + substytucja XOR z maską pseudolosową | Seed losowy |
-
-Każdy etap posiada funkcję `scramble` i `unscramble` — możliwe jest pełne odtworzenie oryginalnego obrazu ze zniszczonej wersji przy użyciu tego samego klucza.
+![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=flat-square&logo=python&logoColor=white)
+![NumPy](https://img.shields.io/badge/NumPy-1.24%2B-013243?style=flat-square&logo=numpy&logoColor=white)
+![Pillow](https://img.shields.io/badge/Pillow-10.0%2B-yellow?style=flat-square)
+![Matplotlib](https://img.shields.io/badge/Matplotlib-3.7%2B-orange?style=flat-square)
+![Tkinter](https://img.shields.io/badge/GUI-Tkinter-lightgrey?style=flat-square)
 
 ---
 
-## Technologie
+## About the Project
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue?logo=python&logoColor=white)
-![NumPy](https://img.shields.io/badge/NumPy-1.24%2B-013243?logo=numpy)
-![Pillow](https://img.shields.io/badge/Pillow-10.0%2B-yellow)
-![Matplotlib](https://img.shields.io/badge/Matplotlib-3.7%2B-orange)
-![Tkinter](https://img.shields.io/badge/GUI-Tkinter-lightgrey)
+This project demonstrates three progressive stages of digital image scrambling (encryption), each increasing in security and complexity:
 
-- **Język:** Python 3.9+
-- **GUI:** Tkinter (wbudowany w Python)
-- **Przetwarzanie obrazu:** Pillow (PIL), NumPy
-- **Analiza / wykresy:** Matplotlib
+| Stage | Method | Key |
+|-------|--------|-----|
+| **1 – Naive Scrambling** | Cyclic row/column shifts (`np.roll`) | Integer shift value |
+| **2 – Pure Permutation** | Fisher-Yates shuffle with inverse permutation P⁻¹ | Random seed |
+| **3 – Hybrid** | Permutation + XOR substitution with pseudorandom mask | Random seed |
+
+Every stage implements both `scramble` and `unscramble` — the original image can be **fully recovered** from the scrambled version using the same key.
 
 ---
 
-## Struktura projektu
+## Tech Stack
+
+- **Language:** Python 3.9+
+- **GUI:** Tkinter (built-in)
+- **Image processing:** Pillow (PIL), NumPy
+- **Analysis & charts:** Matplotlib
+
+---
+
+## Project Structure
 
 ```
 projekt_m2/
-├── main.py                  # GUI + wszystkie algorytmy (główny plik)
-├── analysis.py              # Automatyczna analiza + wykresy do dokumentacji
-├── generate_test_images.py  # Generator obrazów testowych
-├── requirements.txt         # Zależności Python
-├── uruchom.bat              # Skrypt uruchomienia (Windows)
+├── main.py                   # GUI + all scrambling algorithms
+├── analysis.py               # Automated analysis & chart generation
+├── generate_test_images.py   # Test image generator
+├── requirements.txt          # Python dependencies
+├── uruchom.bat               # Windows launcher script
 └── README.md
 ```
 
 ---
 
-## Instalacja
+## Installation
 
-### Wymagania
-
-- Python 3.9+
-- pip
-
-### Kroki
+**Requirements:** Python 3.9+, pip
 
 ```bash
-# 1. Sklonuj repozytorium
+# 1. Clone the repository
 git clone https://github.com/Wilkoz67/projekt_m2.git
 cd projekt_m2
 
-# 2. (Opcjonalnie) utwórz środowisko wirtualne
+# 2. (Optional) create a virtual environment
 python -m venv venv
-venv\Scripts\activate   # Windows
-source venv/bin/activate  # Linux/macOS
+venv\Scripts\activate      # Windows
+source venv/bin/activate   # Linux / macOS
 
-# 3. Zainstaluj zależności
+# 3. Install dependencies
 pip install -r requirements.txt
 ```
 
 ---
 
-## Uruchomienie
+## Usage
 
-### GUI (główna aplikacja)
+### GUI (main application)
 
 ```bash
 python main.py
 ```
 
-lub na Windows — dwuklik w `uruchom.bat`
+Or on Windows — double-click `uruchom.bat`
 
-### Generowanie wykresów analitycznych
+### Generate analytical charts
 
 ```bash
-python generate_test_images.py   # opcjonalnie — tworzy obrazy testowe
-python analysis.py               # generuje wykresy i metryki w analysis_output/
+python generate_test_images.py   # optional — creates test images
+python analysis.py               # generates charts and metrics in analysis_output/
 ```
 
 ---
 
-## Algorytmy
+## Algorithms
 
-### Etap 1 — Naiwny Scrambling
+### Stage 1 — Naive Scrambling
 
-Każdy wiersz `i` przesuwany cyklicznie o `(i * key) % width`, każda kolumna `j` o `(j * key) % height`.  
-**Słabość:** zachowuje lokalną strukturę pikseli — wzorce nadal widoczne.
+Each row `i` is cyclically shifted by `(i * key) % width`, each column `j` by `(j * key) % height`.  
+**Weakness:** preserves local pixel structure — patterns remain partially visible.
 
-### Etap 2 — Czysta Permutacja (Fisher-Yates)
+### Stage 2 — Pure Permutation (Fisher-Yates)
 
-Permutacja `P: {0..N-1} → {0..N-1}` generowana przez `np.random.default_rng(seed).shuffle`.  
-Odwrotność: `P⁻¹[P[i]] = i` dla wszystkich `i`.  
-**Weryfikacja:** `P⁻¹(P(i)) = i` — gwarantuje bezszkodowe odtworzenie.
+Permutation `P: {0..N-1} → {0..N-1}` generated via `np.random.default_rng(seed).shuffle`.  
+Inverse: `P⁻¹[P[i]] = i` for all `i`.  
+**Verification:** `P⁻¹(P(i)) = i` — guarantees lossless recovery.
 
-### Etap 3 — Hybryda (Permutacja + XOR)
+### Stage 3 — Hybrid (Permutation + XOR)
 
 ```
-Scramble:    permutacja(piksel) → XOR z maską pseudolosową
-Unscramble:  XOR z tą samą maską → odwrotna permutacja
+Scramble:    permute(pixel) → XOR with pseudorandom mask
+Unscramble:  XOR with same mask → inverse permutation
 ```
 
-XOR jest samoodwrotne: `f(f(x)) = x` — klucz wystarczy do odszyfrowania.
+XOR is self-inverse: `f(f(x)) = x` — the key alone is sufficient to decrypt.
 
 ---
 
-## Autor
+## Author
 
-**Marek Jancevic**  
-[GitHub: Wilkoz67](https://github.com/Wilkoz67)
+**Marek Jancevic** · [GitHub: Wilkoz67](https://github.com/Wilkoz67)
 
 ---
 
-## Licencja
+## License
 
-Projekt edukacyjny. Brak ograniczeń w użyciu akademickim.
+Educational project. No restrictions for academic use.
